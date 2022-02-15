@@ -15,6 +15,16 @@ type wall struct {
 var walls []wall
 
 func readMap() {
+	// Add walls on around the sreen
+	var screenBoundary wall = wall{coordinates{-1, -1}, coordinates{-1, screenHeight}}
+	walls = append(walls, screenBoundary)
+	screenBoundary = wall{coordinates{-1, screenHeight}, coordinates{screenWidth, screenHeight}}
+	walls = append(walls, screenBoundary)
+	screenBoundary = wall{coordinates{screenWidth, screenHeight}, coordinates{screenWidth, -1}}
+	walls = append(walls, screenBoundary)
+	screenBoundary = wall{coordinates{screenWidth, -1}, coordinates{-1, -1}}
+	walls = append(walls, screenBoundary)
+
 	jsonFile, err := os.Open("map.json")
 	if err != nil {
 		log.Fatal(err)
