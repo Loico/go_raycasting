@@ -15,8 +15,6 @@ const (
 	targetTicksPerSecond = 60
 )
 
-var walls []boundary
-
 type coordinates struct {
 	x float64
 	y float64
@@ -24,17 +22,12 @@ type coordinates struct {
 
 var delta float64
 
-type boundary struct {
-	a coordinates
-	b coordinates
-}
-
 type ray struct {
 	pos coordinates
 	dir float64
 }
 
-func cast(b boundary, r ray) (ret bool, pt coordinates) {
+func cast(b wall, r ray) (ret bool, pt coordinates) {
 	x1 := b.a.x
 	y1 := b.a.y
 	x2 := b.b.x
@@ -86,39 +79,7 @@ func main() {
 
 	elements = append(elements, newPlayer(renderer))
 
-	var b boundary
-
-	b.a = coordinates{0, 0}
-	b.b = coordinates{0, screenHeight}
-	walls = append(walls, b)
-
-	b.a = coordinates{0, screenHeight}
-	b.b = coordinates{screenWidth, screenHeight}
-	walls = append(walls, b)
-
-	b.a = coordinates{screenHeight, screenHeight}
-	b.b = coordinates{screenHeight, 0}
-	walls = append(walls, b)
-
-	b.a = coordinates{screenHeight, 0}
-	b.b = coordinates{0, 0}
-	walls = append(walls, b)
-
-	b.a = coordinates{600, 300}
-	b.b = coordinates{600, 500}
-	walls = append(walls, b)
-
-	b.a = coordinates{100, 700}
-	b.b = coordinates{600, 700}
-	walls = append(walls, b)
-
-	b.a = coordinates{100, 200}
-	b.b = coordinates{600, 300}
-	walls = append(walls, b)
-
-	b.a = coordinates{300, 600}
-	b.b = coordinates{300, 400}
-	walls = append(walls, b)
+	readMap()
 
 	for {
 		frameStartTime := time.Now()
