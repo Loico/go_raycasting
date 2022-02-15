@@ -36,6 +36,38 @@ func drawCircle(renderer *sdl.Renderer, centreX int32, centreY int32, radius int
 	}
 }
 
+type ray struct {
+	pos coordinates
+	end coordinates
+	dir float64
+}
+
+func cast(b wall, r ray) (ret bool, pt coordinates) {
+	x1 := b.a.x
+	y1 := b.a.y
+	x2 := b.b.x
+	y2 := b.b.y
+	x3 := r.pos.x
+	y3 := r.pos.y
+	x4 := r.pos.x + math.Cos(r.dir)
+	y4 := r.pos.y + math.Sin(r.dir)
+
+	den := (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4)
+	if den == 0 {
+		return false, pt
+	}
+	var t, u float64
+	t = ((x1-x3)*(y3-y4) - (y1-y3)*(x3-x4)) / den
+	u = (-((x1-x2)*(y1-y3) - (y1-y2)*(x1-x3))) / den
+	if t > 0 && t < 1 && u > 0 {
+		pt.x = x1 + t*(x2-x1)
+		pt.y = y1 + t*(y2-y1)
+		return true, pt
+	} else {
+		return false, pt
+	}
+}
+
 type playerRenderer struct {
 	container     *element
 	width, height int
@@ -49,7 +81,7 @@ func newPlayerRenderer(container *element, renderer *sdl.Renderer) *playerRender
 	r.container = container
 	var a float64
 	for a = 0; a < 360; a += 0.5 {
-		r.rays = append(r.rays, ray{r.container.position, a * math.Pi / 180})
+		r.rays = append(r.rays, ray{r.container.position, r.container.position, a * math.Pi / 180})
 	}
 
 	return r
@@ -59,6 +91,22 @@ func (r *playerRenderer) onUpdate() error {
 	for i := range r.rays {
 		r.rays[i].pos.x = r.container.position.x
 		r.rays[i].pos.y = r.container.position.y
+
+		var d float64 = 0
+		var minD float64 = screenHeight * screenWidth
+		var record coordinates
+		for _, b := range walls {
+			ret, pt := cast(b, r.rays[i])
+			if ret {
+				d = (pt.x-r.rays[i].pos.x)*math.Cos(r.rays[i].dir) + (pt.y-r.rays[i].pos.y)*math.Sin(r.rays[i].dir)
+				if d < minD {
+					minD = d
+					record = pt
+				}
+			}
+		}
+		r.rays[i].end.x = record.x
+		r.rays[i].end.y = record.y
 	}
 	return nil
 }
@@ -68,24 +116,7 @@ func (r *playerRenderer) onDraw(renderer *sdl.Renderer) error {
 	drawCircle(renderer, int32(r.container.position.x), int32(r.container.position.y), 8)
 
 	for _, ray := range r.rays {
-		var d float64 = 0
-		var minD float64 = screenHeight * screenWidth
-		var wallIsFound bool = false
-		var record coordinates
-		for _, b := range walls {
-			ret, pt := cast(b, ray)
-			if ret {
-				wallIsFound = true
-				d = (pt.x-ray.pos.x)*math.Cos(ray.dir) + (pt.y-ray.pos.y)*math.Sin(ray.dir)
-				if d < minD {
-					minD = d
-					record = pt
-				}
-			}
-		}
-		if wallIsFound {
-			renderer.DrawLine(int32(ray.pos.x), int32(ray.pos.y), int32(record.x), int32(record.y))
-		}
+		renderer.DrawLine(int32(ray.pos.x), int32(ray.pos.y), int32(ray.end.x), int32(ray.end.y))
 	}
 	return nil
 }
