@@ -12,6 +12,7 @@ const (
 	screenHeight = 800
 
 	targetTicksPerSecond = 60
+	fov                  = 90
 )
 
 type coordinates struct {

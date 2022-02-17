@@ -1,20 +1,24 @@
 package main
 
 import (
+	"math"
+
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 type keyboardMover struct {
 	container *element
 	speed     float64
+	rotSpeed  float64
 
 	r *playerRenderer
 }
 
-func newKeyboardMover(container *element, speed float64) *keyboardMover {
+func newKeyboardMover(container *element, speed float64, rotSpeed float64) *keyboardMover {
 	return &keyboardMover{
 		container: container,
 		speed:     speed,
+		rotSpeed:  rotSpeed,
 		r:         container.getComponent(&playerRenderer{}).(*playerRenderer),
 	}
 }
@@ -28,30 +32,39 @@ func (mover *keyboardMover) onUpdate() error {
 
 	newPos := mover.container.position
 
-	if keys[sdl.SCANCODE_LEFT] == 1 {
-		if keys[sdl.SCANCODE_UP] == 1 {
-			newPos.x -= mover.speed * delta * 0.707
-			newPos.y -= mover.speed * delta * 0.707
-		} else if keys[sdl.SCANCODE_DOWN] == 1 {
-			newPos.x -= mover.speed * delta * 0.707
-			newPos.y += mover.speed * delta * 0.707
-		} else {
-			newPos.x -= mover.speed * delta
+	if keys[sdl.SCANCODE_Q] == 1 {
+		mover.container.rotation -= mover.rotSpeed
+	}
+
+	if keys[sdl.SCANCODE_E] == 1 {
+		mover.container.rotation += mover.rotSpeed
+	}
+
+	moveAngle := mover.container.rotation
+	if keys[sdl.SCANCODE_W] == 1 || keys[sdl.SCANCODE_S] == 1 || keys[sdl.SCANCODE_A] == 1 || keys[sdl.SCANCODE_D] == 1 {
+
+		if keys[sdl.SCANCODE_A] == 1 {
+			if keys[sdl.SCANCODE_W] == 1 {
+				moveAngle -= math.Pi / 4
+			} else if keys[sdl.SCANCODE_S] == 1 {
+				moveAngle -= 3 * math.Pi / 4
+			} else {
+				moveAngle -= math.Pi / 2
+			}
+		} else if keys[sdl.SCANCODE_D] == 1 {
+			if keys[sdl.SCANCODE_W] == 1 {
+				moveAngle += math.Pi / 4
+			} else if keys[sdl.SCANCODE_S] == 1 {
+				moveAngle += 3 * math.Pi / 4
+			} else {
+				moveAngle += math.Pi / 2
+			}
+		} else if keys[sdl.SCANCODE_S] == 1 {
+			moveAngle += math.Pi
 		}
-	} else if keys[sdl.SCANCODE_RIGHT] == 1 {
-		if keys[sdl.SCANCODE_UP] == 1 {
-			newPos.x += mover.speed * delta * 0.707
-			newPos.y -= mover.speed * delta * 0.707
-		} else if keys[sdl.SCANCODE_DOWN] == 1 {
-			newPos.x += mover.speed * delta * 0.707
-			newPos.y += mover.speed * delta * 0.707
-		} else {
-			newPos.x += mover.speed * delta
-		}
-	} else if keys[sdl.SCANCODE_UP] == 1 {
-		newPos.y -= mover.speed * delta
-	} else if keys[sdl.SCANCODE_DOWN] == 1 {
-		newPos.y += mover.speed * delta
+
+		newPos.x += mover.speed * delta * math.Cos(moveAngle)
+		newPos.y += mover.speed * delta * math.Sin(moveAngle)
 	}
 
 	if int(newPos.y)-(mover.r.height/2.0) < 0 {

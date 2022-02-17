@@ -42,15 +42,15 @@ type ray struct {
 	dir float64
 }
 
-func cast(b wall, r ray) (ret bool, pt coordinates) {
+func cast(b wall, r ray, rotation float64) (ret bool, pt coordinates) {
 	x1 := b.a.x
 	y1 := b.a.y
 	x2 := b.b.x
 	y2 := b.b.y
 	x3 := r.pos.x
 	y3 := r.pos.y
-	x4 := r.pos.x + math.Cos(r.dir)
-	y4 := r.pos.y + math.Sin(r.dir)
+	x4 := r.pos.x + math.Cos(r.dir+rotation)
+	y4 := r.pos.y + math.Sin(r.dir+rotation)
 
 	den := (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4)
 	if den == 0 {
@@ -80,7 +80,7 @@ func newPlayerRenderer(container *element, renderer *sdl.Renderer) *playerRender
 	r.width, r.height = 16, 16
 	r.container = container
 	var a float64
-	for a = 0; a < 360; a += 0.5 {
+	for a = -(fov / 2); a < fov/2; a += 0.5 {
 		r.rays = append(r.rays, ray{r.container.position, r.container.position, a * math.Pi / 180})
 	}
 
@@ -96,9 +96,9 @@ func (r *playerRenderer) onUpdate() error {
 		var minD float64 = screenHeight * screenWidth
 		var record coordinates
 		for _, b := range walls {
-			ret, pt := cast(b, r.rays[i])
+			ret, pt := cast(b, r.rays[i], r.container.rotation)
 			if ret {
-				d = (pt.x-r.rays[i].pos.x)*math.Cos(r.rays[i].dir) + (pt.y-r.rays[i].pos.y)*math.Sin(r.rays[i].dir)
+				d = math.Abs((pt.x-r.rays[i].pos.x)*math.Cos(r.rays[i].dir) + (pt.y-r.rays[i].pos.y)*math.Sin(r.rays[i].dir))
 				if d < minD {
 					minD = d
 					record = pt
@@ -131,11 +131,12 @@ func newPlayer(renderer *sdl.Renderer) *element {
 	player.position = coordinates{
 		x: 200,
 		y: 400}
+	player.rotation = 0
 
 	r := newPlayerRenderer(player, renderer)
 	player.addComponent(r)
 
-	mover := newKeyboardMover(player, 5)
+	mover := newKeyboardMover(player, 4, 0.004)
 	player.addComponent(mover)
 
 	player.active = true
