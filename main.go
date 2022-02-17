@@ -76,11 +76,6 @@ func main() {
 			}
 		}
 
-		renderer.SetDrawColor(255, 255, 255, 255)
-		for _, b := range walls {
-			renderer.DrawLine(int32(b.a.x), int32(b.a.y), int32(b.b.x), int32(b.b.y))
-		}
-
 		renderer.Present()
 
 		delta = time.Since(frameStartTime).Seconds() * targetTicksPerSecond
