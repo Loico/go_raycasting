@@ -32,11 +32,11 @@ func (mover *keyboardMover) onUpdate() error {
 
 	newPos := mover.container.position
 
-	if keys[sdl.SCANCODE_Q] == 1 {
+	if keys[sdl.SCANCODE_Q] == 1 || keys[sdl.SCANCODE_LEFT] == 1 {
 		mover.container.rotation -= mover.rotSpeed * delta
 	}
 
-	if keys[sdl.SCANCODE_E] == 1 {
+	if keys[sdl.SCANCODE_E] == 1 || keys[sdl.SCANCODE_RIGHT] == 1 {
 		mover.container.rotation += mover.rotSpeed * delta
 	}
 
