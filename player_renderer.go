@@ -95,8 +95,8 @@ func (r *playerRenderer) onUpdate() error {
 		var d float64 = 0
 		var minD float64 = screenHeight * screenWidth
 		var record coordinates
-		for _, b := range walls {
-			ret, pt := cast(b, r.rays[i], r.container.rotation)
+		for _, w := range walls {
+			ret, pt := cast(w, r.rays[i], r.container.rotation)
 			if ret {
 				d = math.Abs((pt.x-r.rays[i].pos.x)*math.Cos(r.rays[i].dir) + (pt.y-r.rays[i].pos.y)*math.Sin(r.rays[i].dir))
 				if d < minD {
@@ -118,9 +118,5 @@ func (r *playerRenderer) onDraw(renderer *sdl.Renderer) error {
 	for _, ray := range r.rays {
 		renderer.DrawLine(int32(ray.pos.x), int32(ray.pos.y), int32(ray.end.x), int32(ray.end.y))
 	}
-	return nil
-}
-
-func (r *playerRenderer) onCollision(other *element) error {
 	return nil
 }

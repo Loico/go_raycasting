@@ -6,6 +6,39 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+func intersect(a coordinates, b coordinates, c coordinates, d coordinates) (ret bool, pt coordinates) {
+	x1 := a.x
+	y1 := a.y
+	x2 := b.x
+	y2 := b.y
+	x3 := c.x
+	y3 := c.y
+	x4 := d.x
+	y4 := d.y
+
+	den := (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4)
+	if den == 0 {
+		return false, pt
+	}
+	var t, u float64
+	t = ((x1-x3)*(y3-y4) - (y1-y3)*(x3-x4)) / den
+	u = (-((x1-x2)*(y1-y3) - (y1-y2)*(x1-x3))) / den
+	if t > 0 && t < 1 && u > 0 && u < 1 {
+		pt.x = x1 + t*(x2-x1)
+		pt.y = y1 + t*(y2-y1)
+		return true, pt
+	} else {
+		return false, pt
+	}
+}
+
+func angleFromABC(a coordinates, b coordinates, c coordinates) float64 {
+	ab := math.Sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y))
+	bc := math.Sqrt((b.x-c.x)*(b.x-c.x) + (b.y-c.y)*(b.y-c.y))
+	ac := math.Sqrt((a.x-c.x)*(a.x-c.x) + (a.y-c.y)*(a.y-c.y))
+	return math.Acos((ab*ab + bc*bc - ac*ac) / (2 * ab * bc))
+}
+
 type keyboardMover struct {
 	container *element
 	speed     float64
@@ -67,6 +100,18 @@ func (mover *keyboardMover) onUpdate() error {
 		newPos.y += mover.speed * delta * math.Sin(moveAngle)
 	}
 
+	// Check collisions
+	for _, w := range walls {
+		ret, pt := intersect(w.a, w.b, mover.container.position, newPos)
+		if ret {
+			// TODO: Add sliding collisions
+			// Calculate angle
+			//angle := angleFromABC(mover.container.position, pt, w.a)
+			_ = pt
+			newPos = mover.container.position
+		}
+
+	}
 	if int(newPos.y)-(mover.r.height/2.0) < 0 {
 		newPos.y = float64(mover.r.height) / 2.0
 	}
@@ -82,9 +127,5 @@ func (mover *keyboardMover) onUpdate() error {
 
 	mover.container.position = newPos
 
-	return nil
-}
-
-func (mover *keyboardMover) onCollision(other *element) error {
 	return nil
 }
