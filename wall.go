@@ -16,14 +16,14 @@ var walls []wall
 
 func readMap() {
 	// Add walls on around the sreen
-	var screenBoundary wall = wall{coordinates{-1, -1}, coordinates{-1, screenHeight}}
-	walls = append(walls, screenBoundary)
-	screenBoundary = wall{coordinates{-1, screenHeight}, coordinates{screenWidth, screenHeight}}
-	walls = append(walls, screenBoundary)
-	screenBoundary = wall{coordinates{screenWidth, screenHeight}, coordinates{screenWidth, -1}}
-	walls = append(walls, screenBoundary)
-	screenBoundary = wall{coordinates{screenWidth, -1}, coordinates{-1, -1}}
-	walls = append(walls, screenBoundary)
+	var mapBoundary wall = wall{coordinates{-1, -1}, coordinates{-1, mapHeight}}
+	walls = append(walls, mapBoundary)
+	mapBoundary = wall{coordinates{-1, mapHeight}, coordinates{mapWidth, mapHeight}}
+	walls = append(walls, mapBoundary)
+	mapBoundary = wall{coordinates{mapWidth, mapHeight}, coordinates{mapWidth, -1}}
+	walls = append(walls, mapBoundary)
+	mapBoundary = wall{coordinates{mapWidth, -1}, coordinates{-1, -1}}
+	walls = append(walls, mapBoundary)
 
 	jsonFile, err := os.Open("map.json")
 	if err != nil {

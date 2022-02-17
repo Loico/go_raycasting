@@ -115,14 +115,14 @@ func (mover *keyboardMover) onUpdate() error {
 	if int(newPos.y)-(mover.r.height/2.0) < 0 {
 		newPos.y = float64(mover.r.height) / 2.0
 	}
-	if int(newPos.y)+(mover.r.height/2.0) > screenHeight {
-		newPos.y = screenHeight - (float64(mover.r.height) / 2.0)
+	if int(newPos.y)+(mover.r.height/2.0) > mapHeight {
+		newPos.y = mapHeight - (float64(mover.r.height) / 2.0)
 	}
 	if int(newPos.x)-(mover.r.width/2.0) < 0 {
 		newPos.x = float64(mover.r.width) / 2.0
 	}
-	if int(newPos.x)+(mover.r.width/2.0) > screenWidth {
-		newPos.x = screenWidth - (float64(mover.r.width) / 2.0)
+	if int(newPos.x)+(mover.r.width/2.0) > mapWidth {
+		newPos.x = mapWidth - (float64(mover.r.width) / 2.0)
 	}
 
 	mover.container.position = newPos

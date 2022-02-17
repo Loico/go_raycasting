@@ -8,11 +8,17 @@ import (
 )
 
 const (
-	screenWidth  = 800
+	screenWidth  = 1600
 	screenHeight = 800
 
+	mapWidth  = 800
+	mapHeight = 800
+
 	targetTicksPerSecond = 60
-	fov                  = 90
+	fov                  = 60
+	nbRay                = 800
+	wallHeightConst      = 40000
+	brightnessConst      = 40000
 )
 
 type coordinates struct {

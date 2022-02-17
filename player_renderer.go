@@ -37,9 +37,10 @@ func drawCircle(renderer *sdl.Renderer, centreX int32, centreY int32, radius int
 }
 
 type ray struct {
-	pos coordinates
-	end coordinates
-	dir float64
+	pos    coordinates
+	end    coordinates
+	dir    float64
+	length float64
 }
 
 func cast(b wall, r ray, rotation float64) (ret bool, pt coordinates) {
@@ -80,8 +81,9 @@ func newPlayerRenderer(container *element, renderer *sdl.Renderer) *playerRender
 	r.width, r.height = 16, 16
 	r.container = container
 	var a float64
-	for a = -(fov / 2); a < fov/2; a += 0.5 {
-		r.rays = append(r.rays, ray{r.container.position, r.container.position, a * math.Pi / 180})
+	var step float64 = float64(fov) / float64(nbRay)
+	for a = -(fov / 2); a < fov/2; a += step {
+		r.rays = append(r.rays, ray{r.container.position, r.container.position, a * math.Pi / 180, 0})
 	}
 
 	return r
@@ -93,7 +95,7 @@ func (r *playerRenderer) onUpdate() error {
 		r.rays[i].pos.y = r.container.position.y
 
 		var d float64 = 0
-		var minD float64 = screenHeight * screenWidth
+		var minD float64 = mapHeight * mapWidth
 		var record coordinates
 		for _, w := range walls {
 			ret, pt := cast(w, r.rays[i], r.container.rotation)
@@ -107,6 +109,8 @@ func (r *playerRenderer) onUpdate() error {
 		}
 		r.rays[i].end.x = record.x
 		r.rays[i].end.y = record.y
+		l := math.Sqrt((r.rays[i].pos.x-r.rays[i].end.x)*(r.rays[i].pos.x-r.rays[i].end.x) + (r.rays[i].pos.y-r.rays[i].end.y)*(r.rays[i].pos.y-r.rays[i].end.y))
+		r.rays[i].length = math.Cos(r.rays[i].dir) * l
 	}
 	return nil
 }
@@ -115,8 +119,25 @@ func (r *playerRenderer) onDraw(renderer *sdl.Renderer) error {
 	renderer.SetDrawColor(255, 255, 255, 255)
 	drawCircle(renderer, int32(r.container.position.x), int32(r.container.position.y), 8)
 
-	for _, ray := range r.rays {
+	for i, ray := range r.rays {
+        // Draw 2D top down view
+		renderer.SetDrawColor(255, 255, 255, 255)
 		renderer.DrawLine(int32(ray.pos.x), int32(ray.pos.y), int32(ray.end.x), int32(ray.end.y))
+
+        // Draw 3D first person view
+		var rect sdl.Rect
+		rect.X = int32((screenWidth / 2) + i*(screenWidth/2)/nbRay)
+		rect.Y = int32((screenHeight / 2) - (wallHeightConst/ray.length)/2)
+		rect.W = int32((screenWidth / 2) / nbRay)
+		rect.H = int32(wallHeightConst / ray.length)
+		brightness := brightnessConst / ray.length
+		if brightness < 0 {
+			brightness = 0
+		} else if brightness > 255 {
+			brightness = 255
+		}
+		renderer.SetDrawColor(uint8(brightness), uint8(brightness), uint8(brightness), 255)
+		renderer.FillRect(&rect)
 	}
 	return nil
 }
