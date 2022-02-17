@@ -136,7 +136,7 @@ func newPlayer(renderer *sdl.Renderer) *element {
 	r := newPlayerRenderer(player, renderer)
 	player.addComponent(r)
 
-	mover := newKeyboardMover(player, 4, 0.004)
+	mover := newKeyboardMover(player, 4, 0.05)
 	player.addComponent(mover)
 
 	player.active = true
