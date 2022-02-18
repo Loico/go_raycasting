@@ -74,25 +74,25 @@ func (mover *keyboardMover) onUpdate() error {
 	}
 
 	moveAngle := mover.container.rotation
-	if keys[sdl.SCANCODE_W] == 1 || keys[sdl.SCANCODE_S] == 1 || keys[sdl.SCANCODE_A] == 1 || keys[sdl.SCANCODE_D] == 1 {
+	if keys[sdl.SCANCODE_W] == 1 || keys[sdl.SCANCODE_UP] == 1 || keys[sdl.SCANCODE_S] == 1 || keys[sdl.SCANCODE_DOWN] == 1 || keys[sdl.SCANCODE_A] == 1 || keys[sdl.SCANCODE_D] == 1 {
 
 		if keys[sdl.SCANCODE_A] == 1 {
-			if keys[sdl.SCANCODE_W] == 1 {
+			if keys[sdl.SCANCODE_W] == 1 || keys[sdl.SCANCODE_UP] == 1 {
 				moveAngle -= math.Pi / 4
-			} else if keys[sdl.SCANCODE_S] == 1 {
+			} else if keys[sdl.SCANCODE_S] == 1 || keys[sdl.SCANCODE_DOWN] == 1 {
 				moveAngle -= 3 * math.Pi / 4
 			} else {
 				moveAngle -= math.Pi / 2
 			}
 		} else if keys[sdl.SCANCODE_D] == 1 {
-			if keys[sdl.SCANCODE_W] == 1 {
+			if keys[sdl.SCANCODE_W] == 1 || keys[sdl.SCANCODE_UP] == 1 {
 				moveAngle += math.Pi / 4
-			} else if keys[sdl.SCANCODE_S] == 1 {
+			} else if keys[sdl.SCANCODE_S] == 1 || keys[sdl.SCANCODE_DOWN] == 1 {
 				moveAngle += 3 * math.Pi / 4
 			} else {
 				moveAngle += math.Pi / 2
 			}
-		} else if keys[sdl.SCANCODE_S] == 1 {
+		} else if keys[sdl.SCANCODE_S] == 1 || keys[sdl.SCANCODE_DOWN] == 1 {
 			moveAngle += math.Pi
 		}
 
