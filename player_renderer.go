@@ -43,6 +43,8 @@ type ray struct {
 	length float64
 }
 
+// cast checks if a ray intersects a wall
+// If the ray intersects the wall, it returns true and the intersection point coordinates
 func cast(b wall, r ray, rotation float64) (ret bool, pt coordinates) {
 	x1 := b.a.x
 	y1 := b.a.y
@@ -64,9 +66,8 @@ func cast(b wall, r ray, rotation float64) (ret bool, pt coordinates) {
 		pt.x = x1 + t*(x2-x1)
 		pt.y = y1 + t*(y2-y1)
 		return true, pt
-	} else {
-		return false, pt
 	}
+	return false, pt
 }
 
 type playerRenderer struct {
@@ -89,6 +90,7 @@ func newPlayerRenderer(container *element, renderer *sdl.Renderer) *playerRender
 	return r
 }
 
+// onUpdate updates rays struct according to player position
 func (r *playerRenderer) onUpdate() error {
 	for i := range r.rays {
 		r.rays[i].pos.x = r.container.position.x
@@ -115,6 +117,7 @@ func (r *playerRenderer) onUpdate() error {
 	return nil
 }
 
+// onDraw draws player's rays on 2D and 3D view
 func (r *playerRenderer) onDraw(renderer *sdl.Renderer) error {
 	renderer.SetDrawColor(255, 255, 255, 255)
 	drawCircle(renderer, int32(r.container.position.x), int32(r.container.position.y), 8)

@@ -14,6 +14,7 @@ type wall struct {
 
 var walls []wall
 
+// readMap reads JSON file that stores the map
 func readMap() {
 	// Add walls on around the sreen
 	var mapBoundary wall = wall{coordinates{-1, -1}, coordinates{-1, mapHeight}}
@@ -31,28 +32,28 @@ func readMap() {
 	}
 	defer jsonFile.Close()
 
-	type JsonA struct {
+	type JSONA struct {
 		X float64 `json:"x"`
 		Y float64 `json:"y"`
 	}
 
-	type JsonB struct {
+	type JSONB struct {
 		X float64 `json:"x"`
 		Y float64 `json:"y"`
 	}
 
-	type JsonWall struct {
-		A JsonA `json:"a"`
-		B JsonB `json:"b"`
+	type JSONWall struct {
+		A JSONA `json:"a"`
+		B JSONB `json:"b"`
 	}
 
-	type JsonWalls struct {
-		Walls []JsonWall `json:"walls"`
+	type JSONWalls struct {
+		Walls []JSONWall `json:"walls"`
 	}
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
-	var m JsonWalls
+	var m JSONWalls
 	if err := json.Unmarshal(byteValue, &m); err != nil {
 		log.Fatal(err)
 	}

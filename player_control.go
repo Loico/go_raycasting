@@ -6,6 +6,8 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+// intersect checks if 2 line segments intersects
+// If it does, the function returns true and the intersection point coordinates
 func intersect(a coordinates, b coordinates, c coordinates, d coordinates) (ret bool, pt coordinates) {
 	x1 := a.x
 	y1 := a.y
@@ -27,11 +29,11 @@ func intersect(a coordinates, b coordinates, c coordinates, d coordinates) (ret 
 		pt.x = x1 + t*(x2-x1)
 		pt.y = y1 + t*(y2-y1)
 		return true, pt
-	} else {
-		return false, pt
 	}
+	return false, pt
 }
 
+// angleFromABC calculate the angle between 3 points
 func angleFromABC(a coordinates, b coordinates, c coordinates) float64 {
 	ab := math.Sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y))
 	bc := math.Sqrt((b.x-c.x)*(b.x-c.x) + (b.y-c.y)*(b.y-c.y))
@@ -60,6 +62,7 @@ func (mover *keyboardMover) onDraw(renderer *sdl.Renderer) error {
 	return nil
 }
 
+// onUpdate updates mover component position according to keyboard state
 func (mover *keyboardMover) onUpdate() error {
 	keys := sdl.GetKeyboardState()
 
